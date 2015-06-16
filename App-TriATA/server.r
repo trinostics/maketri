@@ -5,8 +5,19 @@ library(reshape2)
 options(shiny.maxRequestSize = 30 * 1024^2)
 
 
-shinyServer(function(input, output) {
-#  dimm <- ""
+shinyServer(function(input, output, session) {
+
+  observe({
+    if (is.null(inFyle())) return(NULL)
+#    numnames <- names(detailData())
+    numnames <- names(detailData())[sapply(detailData(), is.numeric)]
+    numnames <- sort(numnames)
+    updateSelectizeInput(session, 'foo', choices = numnames, 
+                         selected = numnames[1L], 
+                         server = TRUE)
+  })
+  
+  
   inFyle <- reactive({input$file1})
   detailData <- reactive({
     if (is.null(inFyle())) return(NULL)
@@ -74,6 +85,11 @@ shinyServer(function(input, output) {
     tri()
 #    acast(detailData(), ay ~ age, sum, value.var = "directlossincurred", fill = as.numeric(NA))
   }, digits = 0)
+
+  output$numericColumns <- renderText({
+    if (is.null(inFyle())) return(NULL)
+    names(detailData())
+  })
   
 output$temppath <- renderText({
     inFile <- input$file1

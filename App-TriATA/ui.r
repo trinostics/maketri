@@ -1,7 +1,7 @@
 library(shiny)
 
 shinyUI(fluidPage(
-  titlePanel("Calculate Triangles and Link Ratios from Detailed Claims"),
+  titlePanel("Calculate Triangles, Link Ratios from Detailed Claims"),
   sidebarLayout(
     sidebarPanel(
       fileInput('file1', 'Choose CSV File',
@@ -33,7 +33,12 @@ shinyUI(fluidPage(
                    '"'),
       tags$hr()
       
+      , selectizeInput('foo', label = "numerics", choices = NULL)
+
       , actionButton("formTriangle", "Form Triangle")
+      
+#      , selectInput("colname", "SelectColumnName",
+#                    numericColumns)
       
       # , something else?
       
