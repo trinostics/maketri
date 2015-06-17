@@ -8,6 +8,10 @@ shinyUI(fluidPage(
                 accept=c('text/csv', 
                          'text/comma-separated-values,text/plain', 
                          '.csv')),
+      # hr() doesn't mean horizontal line with HTML5
+      # Can be defined as such for HTML5 as follows.
+      # There's probably a better place to put this, but I don't know
+      # shiny well enough yet.
       tags$style(HTML("
         hr { 
         display: block;
@@ -33,13 +37,14 @@ shinyUI(fluidPage(
                    '"'),
       tags$hr()
       
-      , selectizeInput('colName', label = "Select column to triangulate", 
-                       choices = NULL)
-
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("DetailSummary", tableOutput('detailSummary'))
+        tabPanel("DetailSummary", 
+                 selectizeInput('colName', label = "Select column to triangulate", 
+                                  choices = NULL),
+                 tableOutput('detailSummary')
+        )
       , tabPanel("Triangle", tableOutput('tri'))
       , tabPanel("LinkRatios", tableOutput('tri.ata'))
         )
