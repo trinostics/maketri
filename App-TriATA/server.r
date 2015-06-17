@@ -36,64 +36,30 @@ shinyServer(function(input, output, session) {
 
   # Here will be calculated the traditional triangle
   # To do: allow the rows and columns to be other than 'ay' and 'age'
+  # Here is where it's reactively calculated ...
   tri <- reactive({
     if (is.null(inFyle())) return(NULL)
     acast(detailData(), ay ~ age, sum, value.var = input$colName, fill = as.numeric(NA))
   })
+  # ... and here is where it's made available to 'output'.
+  output$tri <- renderTable({
+    tri()
+  }, digits = 0)
   
-  # "Debugging data"
-  output$wd <- reactive({getwd()})
-  output$datadir <- reactive({dir("..//data")[1]})
-
   # This being displayed will indicated that the file successfully loaded
-  output$contents <- renderTable({
-      inFile <- inFyle() #input$file1
-      if (is.null(inFile)) return(NULL)
-      summary(detailData())
-    }, 
-    digits = 0
-  )
-
   output$detailSummary <- renderTable({
-    
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, it will be a data frame with 'name',
-    # 'size', 'type', and 'datapath' columns. The 'datapath'
-    # column will contain the local filenames where the data can
-    # be found.
-    
     inFile <- inFyle() #input$file1
     if (is.null(inFile)) return(NULL)
-    
     summary(detailData())
   })
 
+  # This will show the traditional array of link ratios.
+  # BUG! Before the file is uploaded, the link ratio page shows a summary.ata error!
   output$tri.ata <- renderTable({
     triangle <- tri()
     if (is.null(triangle)) return(NULL)
     summary(ata(triangle))
   }, digits = 3)
-  
-  output$tri <- renderTable({
-    tri()
-  }, digits = 0)
-
-  output$numericColumns <- renderText({
-    if (is.null(inFyle())) return(NULL)
-    names(detailData())
-  })
-  
-  output$temppath <- renderText({
-    inFile <- input$file1
-    if (is.null(inFile)) return("path = no file yet chosen")
-    paste("path =", inFile$datapath)
-  })
-
-  output$dimm <- renderText({
-    inFile <- input$file1
-    if (is.null(inFile)) return("dim = no file yet chosen")
-    paste("dim =", paste(as.character(dim(detailData())), collapse = " "))
-    })
   
   # For the future.
   savefyle <- reactive({
@@ -101,4 +67,19 @@ shinyServer(function(input, output, session) {
     write.csv(file.path(output$datadir(), "tri.csv"))
   })
   
-})
+  # "Debugging data"
+  output$wd <- reactive({getwd()})
+  output$datadir <- reactive({dir("..//data")[1]})
+  output$temppath <- renderText({
+    inFile <- input$file1
+    if (is.null(inFile)) return("path = no file yet chosen")
+    paste("path =", inFile$datapath)
+  })
+  output$dimm <- renderText({
+    inFile <- input$file1
+    if (is.null(inFile)) return("dim = no file yet chosen")
+    paste("dim =", paste(as.character(dim(detailData())), collapse = " "))
+  })
+  
+  
+  })

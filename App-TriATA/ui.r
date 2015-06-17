@@ -40,15 +40,8 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("DetailSummary", tableOutput('detailSummary'))
-#        tabPanel("DetailSummary", tableOutput('contents')),
       , tabPanel("Triangle", tableOutput('tri'))
       , tabPanel("LinkRatios", tableOutput('tri.ata'))
-#      , "main panel"
-#      , textOutput('temppath')
-#      , textOutput('wd')
-#      , textOutput('datadir')
-#      , textOutput('dimm')
-#      , tableOutput('tri.ata')
         )
 
     )
