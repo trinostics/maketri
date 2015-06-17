@@ -35,14 +35,14 @@ shinyUI(fluidPage(
                      'Double Quote'='"',
                      'Single Quote'="'"),
                    '"'),
-      tags$hr()
+      tags$hr(),
+      selectizeInput('colName', label = "Select column to triangulate", 
+                     choices = NULL)
       
     ),
     mainPanel(
       tabsetPanel(
         tabPanel("DetailSummary", 
-                 selectizeInput('colName', label = "Select column to triangulate", 
-                                  choices = NULL),
                  tableOutput('detailSummary')
         )
       , tabPanel("Triangle", tableOutput('tri'))
