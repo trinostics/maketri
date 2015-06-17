@@ -7,18 +7,25 @@ options(shiny.maxRequestSize = 30 * 1024^2)
 
 shinyServer(function(input, output, session) {
 
+  # Update the column name selection box based on the numeric's in the table
+  # To do: have the default selectionBox value be the default column!
   observe({
     if (is.null(inFyle())) return(NULL)
-#    numnames <- names(detailData())
     numnames <- names(detailData())[sapply(detailData(), is.numeric)]
     numnames <- sort(numnames)
-    updateSelectizeInput(session, 'foo', choices = numnames, 
+    updateSelectizeInput(session, 'colName', choices = numnames, 
                          selected = numnames[1L], 
                          server = TRUE)
   })
   
-  
+  # input$file1 will be NULL initially. After the user selects
+  # and uploads a file, it will be a data frame with 'name',
+  # 'size', 'type', and 'datapath' columns. The 'datapath'
+  # column will contain the local filenames where the data can
+  # be found.
   inFyle <- reactive({input$file1})
+
+  # This will be the data.frame to work one once it's loaded.
   detailData <- reactive({
     if (is.null(inFyle())) return(NULL)
     x <- read.csv(inFyle()$datapath, header=input$header, sep=input$sep, 
@@ -27,37 +34,25 @@ shinyServer(function(input, output, session) {
     x    
   })
 
+  # Here will be calculated the traditional triangle
+  # To do: allow the rows and columns to be other than 'ay' and 'age'
   tri <- reactive({
     if (is.null(inFyle())) return(NULL)
-    acast(detailData(), ay ~ age, sum, value.var = "directlossincurred", fill = as.numeric(NA))
+    acast(detailData(), ay ~ age, sum, value.var = input$colName, fill = as.numeric(NA))
   })
   
-  savefyle <- reactive({
-    if (is.null(inFyle())) return(NULL)
-    write.csv(file.path(output$datadir(), "tri.csv"))
-  })
-
+  # "Debugging data"
   output$wd <- reactive({getwd()})
-
   output$datadir <- reactive({dir("..//data")[1]})
 
+  # This being displayed will indicated that the file successfully loaded
   output$contents <- renderTable({
-    
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, it will be a data frame with 'name',
-    # 'size', 'type', and 'datapath' columns. The 'datapath'
-    # column will contain the local filenames where the data can
-    # be found.
-    
-    inFile <- inFyle() #input$file1
-    if (is.null(inFile)) return(NULL)
-    
-#    x <- read.csv(inFile$datapath, header=input$header, sep=input$sep, 
-#                  quote=input$quote)
-#    dimm <- dim(x)
-#    head(x)
-    summary(detailData())
-  }, digits = 0)
+      inFile <- inFyle() #input$file1
+      if (is.null(inFile)) return(NULL)
+      summary(detailData())
+    }, 
+    digits = 0
+  )
 
   output$detailSummary <- renderTable({
     
@@ -80,10 +75,7 @@ shinyServer(function(input, output, session) {
   }, digits = 3)
   
   output$tri <- renderTable({
-#    inFile <- inFyle() #input$file1
-#    if (is.null(inFile)) return(NULL)
     tri()
-#    acast(detailData(), ay ~ age, sum, value.var = "directlossincurred", fill = as.numeric(NA))
   }, digits = 0)
 
   output$numericColumns <- renderText({
@@ -91,7 +83,7 @@ shinyServer(function(input, output, session) {
     names(detailData())
   })
   
-output$temppath <- renderText({
+  output$temppath <- renderText({
     inFile <- input$file1
     if (is.null(inFile)) return("path = no file yet chosen")
     paste("path =", inFile$datapath)
@@ -102,4 +94,11 @@ output$temppath <- renderText({
     if (is.null(inFile)) return("dim = no file yet chosen")
     paste("dim =", paste(as.character(dim(detailData())), collapse = " "))
     })
+  
+  # For the future.
+  savefyle <- reactive({
+    if (is.null(inFyle())) return(NULL)
+    write.csv(file.path(output$datadir(), "tri.csv"))
+  })
+  
 })

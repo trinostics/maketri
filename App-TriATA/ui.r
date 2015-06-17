@@ -33,15 +33,9 @@ shinyUI(fluidPage(
                    '"'),
       tags$hr()
       
-      , selectizeInput('foo', label = "numerics", choices = NULL)
+      , selectizeInput('colName', label = "Select column to triangulate", 
+                       choices = NULL)
 
-      , actionButton("formTriangle", "Form Triangle")
-      
-#      , selectInput("colname", "SelectColumnName",
-#                    numericColumns)
-      
-      # , something else?
-      
     ),
     mainPanel(
       tabsetPanel(
