@@ -2,6 +2,7 @@ library(shiny)
 suppressPackageStartupMessages(library(mondate))
 suppressPackageStartupMessages(library(ChainLadder))
 library(reshape2)
+library(excelRio)
 options(shiny.maxRequestSize = 30 * 1024^2)
 
 
@@ -25,12 +26,19 @@ shinyServer(function(input, output, session) {
   # be found.
   inFyle <- reactive({input$file1})
 
-  # This will be the data.frame to work one once it's loaded.
+  # This will be the data.frame to work with once it's loaded.
   detailData <- reactive({
     if (is.null(inFyle())) return(NULL)
-    x <- read.csv(inFyle()$datapath, header=input$header, sep=input$sep, 
-             quote=input$quote)
-    x$age <- mondate(x$eval_dt) - mondate.ymd(x$ay - 1)
+#    x <- read.csv(inFyle()$datapath, header=input$header, sep=input$sep, 
+#             quote=input$quote
+#             , stringsAsFactors = FALSE)
+#    for (i in seq_along(x)) {
+#      if (w <- excelRio:::is.date.string(x[[i]])) x[[i]] <- attr(w, "value")
+#    }
+    x <- readFromCsv(inFyle()$datapath, stringsAsFactors = FALSE, 
+                     header = input$header, simplify = FALSE)
+    x$ay <- year(x$lossdate)
+    x$ayage <- mondate(x$eval_dt) - mondate.ymd(x$ay - 1)
     x    
   })
 
@@ -39,12 +47,10 @@ shinyServer(function(input, output, session) {
   # Here is where it's reactively calculated ...
   tri <- reactive({
     if (is.null(inFyle())) return(NULL)
-    acast(detailData(), ay ~ age, sum, value.var = input$colName, fill = as.numeric(NA))
+    acast(detailData(), ay ~ ayage, sum, value.var = input$colName, fill = as.numeric(NA))
   })
   # ... and here is where it's made available to 'output'.
-  output$tri <- renderTable({
-    tri()
-  }, digits = 0)
+  output$tri <- renderTable({tri()}, digits = 0)
   
   # This being displayed will indicated that the file successfully loaded
   output$detailSummary <- renderTable({

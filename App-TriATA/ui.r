@@ -5,9 +5,9 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       fileInput('file1', 'Choose CSV File',
-                accept=c('text/csv', 
-                         'text/comma-separated-values,text/plain', 
-                         '.csv')),
+                accept = c('text/csv', 
+                           'text/comma-separated-values,text/plain', 
+                           '.csv')),
       # hr() doesn't mean horizontal line with HTML5
       # Can be defined as such for HTML5 as follows.
       # There's probably a better place to put this, but I don't know

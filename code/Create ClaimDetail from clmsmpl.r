@@ -41,6 +41,7 @@ outx <- data.frame(
   , expenseincd = x$directexpenseincurred
   , losspaid = x$losspaid
   , lossincd = x$lossincd
+  , openclosed = x$ocstatus
 )
 sum(outx$lossincd == 0)
 
