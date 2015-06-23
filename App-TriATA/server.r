@@ -3,6 +3,7 @@ suppressPackageStartupMessages(library(mondate))
 suppressPackageStartupMessages(library(ChainLadder))
 library(reshape2)
 library(excelRio)
+library(data.table)
 options(shiny.maxRequestSize = 30 * 1024^2)
 
 
