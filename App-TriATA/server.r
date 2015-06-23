@@ -40,7 +40,7 @@ shinyServer(function(input, output, session) {
                      header = input$header, simplify = FALSE)
     x$ay <- year(x$lossdate)
     x$ayage <- mondate(x$eval_dt) - mondate.ymd(x$ay - 1)
-    x    
+    data.table(x)    
   })
 
   # Here will be calculated the traditional triangle
